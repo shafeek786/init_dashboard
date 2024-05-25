@@ -11,6 +11,8 @@ import {MatSelectModule} from "@angular/material/select"
 import {MatCheckboxModule} from "@angular/material/checkbox"
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
 
 
 @NgModule({
@@ -25,7 +27,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
         MatSelectModule,
         MatCheckboxModule,
         MatFormFieldModule,
-        MatAutocompleteModule
+        MatAutocompleteModule,
+        MatSnackBarModule
     ]
 })
 export class MaterialModule { }
