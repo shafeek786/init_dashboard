@@ -1,0 +1,36 @@
+.header-sign {
+    background-color: black;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    height: 65px;
+    display: flex; /* Add this line */
+    align-items: center; /* Add this line */
+    position: fixed;
+    z-index: 1;
+    color: white;
+}
+
+.logo {
+    margin-right: auto; /* This will push the logo to the left */
+}
+
+.logo a {
+    display: inline-block;
+    padding: 24px 0 29px;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logout-link {
+    text-decoration: none; /* Remove text decoration */
+    color: white; /* Set the text color to white */
+    cursor: pointer;
+  }
+
+  
+

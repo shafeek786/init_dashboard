@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
-import { userGuardGuard } from '../guards/user-guard.guard';
+import { loginGuard } from '../guards/login.guard';
 
 const routes: Routes = [
-  { path: '', component: LoginComponent}
+  { path: '', component: LoginComponent,canActivate:[loginGuard]}
 ];
 
 @NgModule({

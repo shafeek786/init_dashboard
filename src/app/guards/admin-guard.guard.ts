@@ -1,5 +1,50 @@
-import { CanActivateFn } from '@angular/router';
+import { Injectable } from '@angular/core';
+import {
+  ActivatedRouteSnapshot,
+  CanActivate,
+  Router,
+  RouterStateSnapshot,
+  UrlTree,
+} from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { Observable, map } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
-export const adminGuardGuard: CanActivateFn = (route, state) => {
-  return true;
-};
+interface id {
+  id: string;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class adminGuardGuard implements CanActivate {
+  currentUrl!: string;
+
+  constructor(
+    private service: AuthService,
+    private router: Router,
+    private toastr: ToastrService
+  ) {}
+
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ):
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree>
+    | boolean
+    | UrlTree {
+    this.currentUrl = this.router.url;
+    if (this.service.isLogin()) {
+      if (this.service.getUserRole() === 'admin') {
+        return true;
+      } else {
+        this.toastr.warning('You dont have accesss. Please login as admin');
+        this.service.logout();
+        return this.router.parseUrl('/');
+      }
+    }
+
+    return this.router.parseUrl('/');
+  }
+}

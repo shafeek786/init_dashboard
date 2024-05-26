@@ -1,1 +1,11 @@
-<p>admin-dashboard works!</p>
+
+<section >
+  
+
+<app-header></app-header>
+<app-sidebar (onToggleSideNav)="onToggleSideNav($event)"></app-sidebar>
+<app-body
+[collapsed]="isSideNavCollapsed"
+[screenWidth]="screenWidth"></app-body>
+<app-footer></app-footer>
+</section>

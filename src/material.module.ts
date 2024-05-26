@@ -12,8 +12,7 @@ import {MatCheckboxModule} from "@angular/material/checkbox"
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-
-
+import { MatPaginator } from "@angular/material/paginator";
 
 @NgModule({
     exports: [
