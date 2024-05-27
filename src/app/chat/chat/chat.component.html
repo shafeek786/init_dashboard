@@ -5,8 +5,7 @@
           <div class="user-card cursor-pointer"
             [class.active]="userList.email === selectedUser?.email"
             (click)="selectUserHandler(userList._id)">
-            <img [src]="userList.proPic[0]" [alt]="userList.firstName" class="avatar" />
-            <p class="username">{{userList.firstName}}</p>
+            <p class="username">{{userList.name}}</p>
             <p>{{ userList.unreadMessageCount }}</p>
           </div>
         </div>

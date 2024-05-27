@@ -1,7 +1,9 @@
 export interface User {
+    _id:string
     name:string,
-    emailId:string,
-    mobile:number
+    email:string,
+    mobile:number,
+    unreadMessageCount:number
 }
 
 export  interface userId{
@@ -15,7 +17,12 @@ export  interface userId{
   
   }
   export interface userData {
-    trainerData: User
+    userData: User
     message: string
     unreadCounts:{ _id: string; count: number }[] 
+  }
+
+  export interface apiResponse{
+    userData:User,
+    unreadCounts:number
   }

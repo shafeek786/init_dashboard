@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Environment } from '../environment/environemnt';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User } from '../interfaces/user';
+import { User, apiResponse, userData } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,9 @@ export class UserService {
               
   ) { }
 
-  getUser(id:string):Observable<User[]>{
-    return this.http.get<User[]>(this.apiUrl+'/getuser')
+  getUser(id:string):Observable<apiResponse>{
+    console.log("get user")
+
+    return this.http.get<apiResponse>(this.apiUrl+'/getuser')
   }
 }

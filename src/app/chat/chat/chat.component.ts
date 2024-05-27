@@ -50,7 +50,7 @@ export class ChatComponent implements OnInit {
     this.decodedToken = jwtDecode(localStorage.getItem('token') as string);
     this.getAllMessage()
     this.currentUser = this.decodedToken.id;
-    this.getTrainer();
+    this.getUser();
     this.getUserUpdate()
    
    
@@ -65,7 +65,7 @@ export class ChatComponent implements OnInit {
       .getMessage()
       .subscribe((data: { user: string; room: string; message: string }) => {
         if (this.roomId) {
-              this.getTrainer()
+              this.getUser()
            
 
           setTimeout(() => {
@@ -87,12 +87,12 @@ export class ChatComponent implements OnInit {
       this.allMessage = res.chats
     })
   }
-  getTrainer() {
+  getUser() {
     this.service
       .getUser(this.decodedToken.id)
       .subscribe((res: userData) => {
 
-        this.userList= res.trainerData
+        this.userList= res.userData
         this.unreadCounts = res.unreadCounts
         console.log('traienrrr: ' + this.userList);
         this.getUnreadMessageCount()
@@ -108,10 +108,8 @@ export class ChatComponent implements OnInit {
       console.log("trainser side user: ", res.userData);
       console.log("to shared service: "+res.userData)
       this.SharedChatService.updateUserList(res.userData)
-      // If userData is an object, log its properties individually
       console.log("userData firstName:", res.userData.name);
       console.log("userData email:", res.userData.email);
-      // Add more properties as needed
     });
   }
 
@@ -128,7 +126,7 @@ export class ChatComponent implements OnInit {
   selectUserHandler(trainerId: string): void {
     this.scrollToBottom()
 
-    this.getTrainer()
+    this.getUser()
 
     this.selectedUser = this.userList._id
     console.log('selected trainer: ' + this.selectedUser
