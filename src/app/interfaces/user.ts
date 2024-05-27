@@ -1,4 +1,4 @@
-export interface User {
+export interface user {
     _id:string
     name:string,
     email:string,
@@ -10,19 +10,19 @@ export  interface userId{
     _id:string
   }
 
-  export interface TokenData {
+  export interface tokenData {
     id: string;
     name: string;
     email: string;
   
   }
   export interface userData {
-    userData: User
+    userData: user
     message: string
     unreadCounts:{ _id: string; count: number }[] 
   }
 
   export interface apiResponse{
-    userData:User,
+    userData:user[],
     unreadCounts:number
   }

@@ -1,201 +1,141 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
-import { User,TokenData,userData } from 'src/app/interfaces/user';
-import { ChatService } from 'src/app/services/chat.service'; 
-import { SharedChatService } from '../../services/shared-chat.service';
-import { AuthService } from 'src/app/services/auth.service';
+import { apiResponse,user,tokenData } from 'src/app/interfaces/user';
 import { UserService } from 'src/app/services/user.service';
-
+import { ChatService } from 'src/app/services/chat.service';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
+  decodedToken!: tokenData;
+  public userList!: user[];
+  public showScreen = false;
+  public phone!: string;
+  public currentUser!:any;
+  public selectedUser: any;
   public roomId!: string;
   public messageText!: string;
   public messageArray: { user: string; message: string }[] = [];
   public storageArray: any[] = [];
-  public allMessage: any[] = []
-  public unreadCounts: { _id: any; count: number }[] = [];
-  public userList2!: User[]
-
-  public showScreen = false;
-  public phone!: string;
-  public currentUser: any;
-  public selectedUser: any;
-  decodedToken!: TokenData;
-  unreadCount:number  = 1
-  public userList!: User;
-  notifications: any;
-
+  selectedFile: File | null = null;
+check:number = 0
   constructor(
     private chatService: ChatService,
-    private trainerService: UserService,
-    private SharedChatService:SharedChatService,
-    private service: UserService
+    private service: UserService,
+    private router: Router
+ 
   ) {}
-  @ViewChild('chatContainer', { static: false }) chatContainer!: ElementRef;
-
-  scrollToBottom(): void {
-    try {
-      console.log("Before scroll:", this.chatContainer.nativeElement.scrollTop, this.chatContainer.nativeElement.scrollHeight);
-      this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
-      console.log("After scroll:", this.chatContainer.nativeElement.scrollTop, this.chatContainer.nativeElement.scrollHeight);
-      
-    } catch(err) { }
-  }
-
   ngOnInit(): void {
     this.decodedToken = jwtDecode(localStorage.getItem('token') as string);
-    this.getAllMessage()
     this.currentUser = this.decodedToken.id;
     this.getUser();
-    this.getUserUpdate()
-   
-   
 
-    console.log("Before subscribing to trainerList$");
-    this.SharedChatService.trainerList$.subscribe((res: userData) => {
-      console.log("Subscription triggered. Received data:", res);
-      this.unreadCounts = res.unreadCounts;
-      this.getUnreadMessageCount();
-    });
     this.chatService
       .getMessage()
       .subscribe((data: { user: string; room: string; message: string }) => {
         if (this.roomId) {
-              this.getUser()
-           
-
+          this.getUser()
           setTimeout(() => {
-            this.getUserUpdate()
             this.chatService.getStorage(this.roomId).subscribe((res: any) => {
               console.log('res:' + res.chats);
               this.storageArray = res.chats;
-              
-            });
+            });  
+            console.log('data' + this.storageArray);
+            const storeIndex = this.storageArray.findIndex(
+              (storage: {
+                roomId: string;
+                chats: { user: string; message: string }[];
+              }) => storage.roomId === this.roomId
+            );
+            if (storeIndex > -1) {
+              this.messageArray = this.storageArray[storeIndex].chats;
+            }
           }, 500);
         }
       });
-
-      
-    
   }
-  getAllMessage(){
-    this.chatService.getAllMessage(this.decodedToken.id).subscribe((res:any)=>{
-      this.allMessage = res.chats
-    })
-  }
-  getUser() {
-    this.service
-      .getUser(this.decodedToken.id)
-      .subscribe((res: userData) => {
-
-        this.userList= res.userData
-        this.unreadCounts = res.unreadCounts
-        console.log('traienrrr: ' + this.userList);
-        this.getUnreadMessageCount()
-      });
-  }
-
-  getUserUpdate() {
-    console.log("trainerId:" + this.decodedToken.id);
-    this.service.getUser(this.selectedUser).subscribe((res: any) => {
-      this.userList2 = res.userData;
-      console.log("trainser side user: ", res);
-      console.log("trainser side user: ", this.userList2);
-      console.log("trainser side user: ", res.userData);
-      console.log("to shared service: "+res.userData)
-      this.SharedChatService.updateUserList(res.userData)
-      console.log("userData firstName:", res.userData.name);
-      console.log("userData email:", res.userData.email);
+  readMessage(roomId:string,trainerId: string) {
+    this.chatService.readMessage(roomId,trainerId).subscribe(() => {
+      console.log("Message read successfully.");
+    }, (error) => {
+      console.error("Error reading message:", error);
     });
   }
+  getUser() {
+    console.log('trainerId:' + this.decodedToken.id);
+    this.service.getUser(this.decodedToken.id).subscribe((res: apiResponse) => {
+      this.userList = res.userData;
 
-  getUnreadMessageCount() {
-    console.log("hjkhjkdgh"+ this.userList)
-      const unreadMessageObj = this.unreadCounts.find((count) => count._id === this.userList._id);
-   
-    this.unreadCount =  unreadMessageObj ? unreadMessageObj.count : 0;
-    console.log("count :"+this.unreadCount)
-}
+      console.log('trainser side user: ' + res);
+    });
+  }
+  getUser2() {
+    console.log('trainerId:' + this.decodedToken.id);
+    this.service.getUser(this.decodedToken.id).subscribe((res: apiResponse) => {
+      this.userList = res.userData;
 
-
-  
-  selectUserHandler(trainerId: string): void {
-    this.scrollToBottom()
-
+      console.log('trainser side user: ' + res);
+    });
+  }
+ 
+  selectUserHandler(userId: string): void {
     this.getUser()
-
-    this.selectedUser = this.userList._id
-    console.log('selected trainer: ' + this.selectedUser
-    );
+    this.selectedUser = this.userList.find((user) => user._id === userId);
+    console.log('selected trainer: ' + this.selectedUser._id);
+    this.readMessage(this.selectedUser._id,this.decodedToken.id)
     this.messageArray = [];
     this.chatService
-      .getroom(this.decodedToken.id, this.selectedUser)
+      .getroombyTrainer(this.decodedToken.id, this.selectedUser._id)
       .subscribe((res: any) => {
         this.roomId = res.roomDetails._id;
+        this.readMessage(this.roomId,this.decodedToken.id)
 
         this.chatService.getStorage(this.roomId).subscribe((res: any) => {
           this.storageArray = res.chats;
-          console.log('dataaa' + this.storageArray);
+        });
       });
 
-      this.readMessage(this.roomId,this.decodedToken.id)
- 
-    });
 
-    console.log('dataaa' + this.storageArray);
-
-    console.log('room: ' + this.roomId);
-    console.log('data' + this.storageArray);
     const storeIndex = this.storageArray.findIndex(
       (storage) => storage.roomId === this.roomId
     );
 
+    if (storeIndex > -1) {
+      this.messageArray = this.storageArray[storeIndex].chats;
+    }
+
+    this.join(this.currentUser.name, this.roomId);
    
 
-    this.join(this.currentUser, this.selectedUser._id);
   }
 
   join(username: string, roomId: string): void {
     this.chatService.joinRoom({
       userId: username,
-      trainerId: this.selectedUser,
+      trainerId: this.decodedToken.id,
     });
   }
- 
-  getUnreadNotificationCount(trainerId: string): number {
-    return this.storageArray.filter((notification: { sender: string; is_read: any }) => 
-        notification.sender === trainerId && !notification.is_read
-    ).length;
-}
-
-readMessage(roomId:string,userId: string) {
-  this.chatService.readMessage(roomId,userId).subscribe(() => {
-    console.log("Message read successfully.");
-  }, (error) => {
-    console.error("Error reading message:", error);
-  });
-}
 
   sendMessage(): void {
-    console.log("hiiii")
-    this.SharedChatService.updateCheck(200)
-
-    console.log("message:  "+this.messageText);
+    console.log("send check")
     this.chatService.sendMessage({
-      userID: this.decodedToken.id,
-      trainerId: this.selectedUser._id,
+      senderId: this.selectedUser._id,
+      receiverID: this.decodedToken.id,
       message: this.messageText,
     });
+    console.log("send check")
     this.chatService
       .storemessage(this.decodedToken.id, this.messageText, this.roomId)
       .subscribe((res: any) => {});
+      console.log("send check")
+
     this.chatService.getStorage(this.roomId).subscribe((res: any) => {
       this.storageArray = res.chats;
     });
+    console.log(this.storageArray);
     const storeIndex = this.storageArray.findIndex(
       (storage) => storage.roomId === this.roomId
     );
@@ -218,9 +158,18 @@ readMessage(roomId:string,userId: string) {
 
       this.storageArray.push(updateStorage);
     }
-    this.getUserUpdate()
+
     this.chatService.setStorage(this.storageArray);
     this.messageText = '';
+  }
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+    if (this.selectedFile) {
+      // File is selected, you can now upload it or handle it as per your requirement
+      console.log('File selected:', this.selectedFile.name);
+      // You can trigger the upload process or any other action here
+    }
   }
   
 }

@@ -8,11 +8,9 @@
 }
 
 /* Apply a mobile-first approach for responsiveness */
-.content-body{
+.container-fluid {
+  padding: 20px; /* Adjust padding for smaller screens */
   overflow: hidden;
-  min-height: 100vh;
-  padding-left: 10%;
-  padding-top: 100px;
 }
 
 .user-list-card,

@@ -9,7 +9,7 @@ import { Environment } from '../environment/environemnt';
 })
 export class ChatService {
   private socket!: Socket;
-  private url = Environment.BASE_URL+'/api';
+  private url = Environment.BASE_URL;
   private surl = Environment.BASE_URL
   constructor(private http : HttpClient) {
     this.socket = io(this.surl, {transports: ['websocket', 'polling', 'flashsocket']});
@@ -20,17 +20,16 @@ export class ChatService {
     this.socket.emit('join', data)
   }
 
-  sendMessage(data: { userID: string; trainerId: string; message:string }): void {
-    console.log("message: "+ data.trainerId)
+  sendMessage(data: { receiverID: string; senderId: string; message:string }): void {
+    console.log("message: "+ data.senderId)
     this.socket.emit('message', data);
 
   }
 storemessage(userId:string,message:string,roomId:string){
+  console.log("store")
   return this.http.post(this.url+'/create-new-chat',{userId,message,roomId})
 }
-trainerStoremessage(trainerId:string,message:string,roomId:string){
-  return this.http.post(this.url+'/trainer/create-new-chat',{trainerId,message,roomId})
-}
+
   getMessage(): Observable<{ user: string; room: string; message: string }> {
     return new Observable<{ user: string; room: string; message: string }>(observer => {
       

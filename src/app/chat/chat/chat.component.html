@@ -1,51 +1,67 @@
-<div class="content-body">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="col-span-1 md:col-span-3">
-        <div class="user-list-card">
-          <div class="user-card cursor-pointer"
-            [class.active]="userList.email === selectedUser?.email"
-            (click)="selectUserHandler(userList._id)">
-            <p class="username">{{userList.name}}</p>
-            <p>{{ userList.unreadMessageCount }}</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-span-2 md:col-span-6">
-        <div class="chat-container">
-          <ng-container *ngIf="selectedUser">
-            <div class="chat-header flex items-center">
-              <img src="assets/img/man (1).png"  class="avatar" />
-              <p class="username">{{selectedUser?.name}}</p>
-            </div>
-            <div class="chat-body" #chatContainer>
-              <div *ngFor="let item of storageArray; let i = index">
-                <ng-container *ngIf="item.sender === currentUser; else receiverMessage">
-                  <div class="sender-message">
-                    <div class="message-container">
-                      <p class="message-content">{{ item.content }}</p>
-                      <p class="message-time">{{ item.createdAt | date: 'hh:mm a' }}</p>
-                    </div>
-                  </div>
-                </ng-container>
-                <ng-template #receiverMessage>
-                  <div class="receiver-message">
-                    <div class="message-container">
-                      <p class="message-content">{{ item.content }}</p>
-                      <p class="message-time">{{ item.createdAt | date: 'hh:mm a' }}</p>
-                    </div>
-                  </div>
-                </ng-template>
-              </div>
-            </div>
-            <div class="chat-footer">
-              <div class="flex items-center">
-                <input type="text" placeholder="Type a message" class="form-control" [(ngModel)]="messageText" (keyup.enter)="sendMessage()" />
-                <button class="btn btn-primary btn-sm ml-2" (click)="sendMessage()">Send</button>
-              </div>
-            </div>
-          </ng-container>
+<div class="container mx-auto">
+  <div class="flex">
+    <div class="w-1/3">
+      <div class="user-list-card">
+        <div class="user-card" [ngClass]="user?._id === selectedUser?._id ? 'active':''" *ngFor="let user of userList"
+          (click)="selectUserHandler(user._id)">
+          <p class="username">{{user.name}}</p>
+          <p *ngIf="user.unreadMessageCount > 0"
+            [ngStyle]="{'background-color': user.unreadMessageCount > 0 ? '#ff5722' : 'transparent', 'color': user.unreadMessageCount > 0 ? '#fff' : '#000'}"
+            class="unread">{{ user.unreadMessageCount }}</p>
         </div>
       </div>
     </div>
+    <div class="w-2/3">
+      <div class="chat-container">
+        <ng-container *ngIf="selectedUser">
+          <div class="chat-header flex items-center">
+            <img src="assets/img/man (1).png" class="avatar w-10 h-10 rounded-full" />
+            <p class="username">{{selectedUser?.name}}</p>
+          </div>
+          <div class="chat-body">
+            <div *ngFor="let item of storageArray; let i = index">
+              <ng-container *ngIf="item.sender === currentUser; else receiverMessage">
+                <div class="sender-message">
+                  <div class="message-container">
+                    <p class="message-content">{{ item.content }}</p>
+                    <p class="message-time">{{ item.createdAt | date: 'hh:mm a' }}</p>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #receiverMessage>
+                <div class="receiver-message">
+                  <div class="message-container">
+                    <p class="message-content">{{ item.content }}</p>
+                    <p class="message-time">{{ item.createdAt | date: 'hh:mm a' }}</p>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+
+          <div class="chat-footer">
+            <div class="flex">
+              <div class="w-10/12">
+                <div class="form-group mb-0">
+                  <input type="text" placeholder="Type a message" class="form-control border border-gray-300 rounded py-2 px-4" [(ngModel)]="messageText" (keyup.enter)="sendMessage()" />
+                </div>
+              </div>
+              <div class="w-2/12 text-center align-self-center">
+                <button class="btn btn-primary btn-sm px-3" (click)="sendMessage()">Send</button>
+              </div>
+              <!-- File Attachment -->
+              <div class="w-12 text-center align-self-center">
+                <label for="fileInput" class="cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                </label>
+                <input id="fileInput" type="file" class="hidden" (change)="onFileSelected($event)" />
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
   </div>
-  
+</div>
