@@ -44,16 +44,12 @@ storemessage(userId:string,message:string,roomId:string){
     });
   }
 
-  getroom(userId:string, trainerId:string){
-    console.log("trainer room:"+ trainerId)
-    const params = new HttpParams().set('userId',String(userId)).set('trainerId',String(trainerId))
+  getroomById(myId:string, yourId:string){
+    console.log("trainer room:"+ yourId)
+    const params = new HttpParams().set('myId',String(myId)).set('yourId',String(yourId))
     return this.http.get(this.url+'/getroom',{ params })
   }
-  getroombyTrainer(trainerId:string, userId:string){
-    console.log(trainerId,userId)
-    const params = new HttpParams().set('userId',String(userId)).set('trainerId',String(trainerId))
-    return this.http.get(this.url+'/getroom',{ params })
-  }
+ 
   getStorage(roomId:string) {
     const params = new HttpParams().set('roomId', String(roomId))
     return this.http.get(this.url+'/fetch-chatbyid',{ params })

@@ -88,7 +88,7 @@ check:number = 0
     this.readMessage(this.selectedUser._id,this.decodedToken.id)
     this.messageArray = [];
     this.chatService
-      .getroombyTrainer(this.decodedToken.id, this.selectedUser._id)
+      .getroomById(this.decodedToken.id, this.selectedUser._id)
       .subscribe((res: any) => {
         this.roomId = res.roomDetails._id;
         this.readMessage(this.roomId,this.decodedToken.id)
