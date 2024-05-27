@@ -25,19 +25,17 @@ export class ChatService {
     this.socket.emit('message', data);
 
   }
-storemessage(userId:string,message:string,roomId:string){
-  console.log("store")
-  return this.http.post(this.url+'/create-new-chat',{userId,message,roomId})
+storemessage(userId:string,receiverId:string,message:string,roomId:string){
+  console.log("store"+receiverId)
+  return this.http.post(this.url+'/create-new-chat',{userId,receiverId,message,roomId})
 }
 
   getMessage(): Observable<{ user: string; room: string; message: string }> {
-    return new Observable<{ user: string; room: string; message: string }>(observer => {
-      
+    return new Observable<{ user: string; room: string; message: string }>(observer => { 
       this.socket.on('new message', (data) => {
         observer.next(data);
         console.log("received message: "+ data.message)
       });
-
       return () => {
         this.socket.disconnect();
       }

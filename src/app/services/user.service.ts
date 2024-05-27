@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Environment } from '../environment/environemnt';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { user, apiResponse, userData } from '../interfaces/user';
 
@@ -16,7 +16,7 @@ export class UserService {
 
   getUser(id:string):Observable<apiResponse>{
     console.log("get user")
-
-    return this.http.get<apiResponse>(this.apiUrl+'/getuser')
+    const params = new HttpParams().set('userId', String(id))
+    return this.http.get<apiResponse>(this.apiUrl+'/getuserlist',{ params })
   }
 }

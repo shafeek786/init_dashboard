@@ -2,13 +2,16 @@
   <div class="flex">
     <div class="w-1/3">
       <div class="user-list-card">
-        <div class="user-card" [ngClass]="user?._id === selectedUser?._id ? 'active':''" *ngFor="let user of userList"
-          (click)="selectUserHandler(user._id)">
-          <p class="username">{{user.name}}</p>
-          <p *ngIf="user.unreadMessageCount > 0"
-            [ngStyle]="{'background-color': user.unreadMessageCount > 0 ? '#ff5722' : 'transparent', 'color': user.unreadMessageCount > 0 ? '#fff' : '#000'}"
-            class="unread">{{ user.unreadMessageCount }}</p>
-        </div>
+        <ng-container *ngFor="let user of userList">
+          <div class="user-card" 
+               [ngClass]="user?._id === selectedUser?._id ? 'active':''" 
+               (click)="selectUserHandler(user._id)"
+               *ngIf="user._id !== decodedToken.id">
+            <p class="username">{{user.name}}</p>
+            <p *ngIf="user.unreadMessageCount > 0" [ngStyle]="{'background-color': user.unreadMessageCount > 0 ? '#ff5722' : 'transparent', 'color': user.unreadMessageCount > 0 ? '#fff' : '#000'}" class="unread">{{ user.unreadMessageCount }}</p>
+
+          </div>
+        </ng-container>
       </div>
     </div>
     <div class="w-2/3">

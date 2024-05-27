@@ -1,32 +1,31 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
-import { apiResponse,user,tokenData } from 'src/app/interfaces/user';
+import { apiResponse, user, tokenData } from 'src/app/interfaces/user';
 import { UserService } from 'src/app/services/user.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+  styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit {
   decodedToken!: tokenData;
   public userList!: user[];
   public showScreen = false;
   public phone!: string;
-  public currentUser!:any;
+  public currentUser!: any;
   public selectedUser: any;
   public roomId!: string;
   public messageText!: string;
   public messageArray: { user: string; message: string }[] = [];
   public storageArray: any[] = [];
   selectedFile: File | null = null;
-check:number = 0
+  check: number = 0;
   constructor(
     private chatService: ChatService,
     private service: UserService,
     private router: Router
- 
   ) {}
   ngOnInit(): void {
     this.decodedToken = jwtDecode(localStorage.getItem('token') as string);
@@ -37,12 +36,12 @@ check:number = 0
       .getMessage()
       .subscribe((data: { user: string; room: string; message: string }) => {
         if (this.roomId) {
-          this.getUser()
+          this.getUser();
           setTimeout(() => {
             this.chatService.getStorage(this.roomId).subscribe((res: any) => {
               console.log('res:' + res.chats);
               this.storageArray = res.chats;
-            });  
+            });
             console.log('data' + this.storageArray);
             const storeIndex = this.storageArray.findIndex(
               (storage: {
@@ -57,18 +56,22 @@ check:number = 0
         }
       });
   }
-  readMessage(roomId:string,trainerId: string) {
-    this.chatService.readMessage(roomId,trainerId).subscribe(() => {
-      console.log("Message read successfully.");
-    }, (error) => {
-      console.error("Error reading message:", error);
-    });
+  readMessage(roomId: string, selectedUserId: string) {
+    this.chatService.readMessage(roomId, selectedUserId).subscribe(
+      () => {
+        console.log('Message read successfully.');
+      },
+      (error) => {
+        console.error('Error reading message:', error);
+      }
+    );
   }
+
+  
   getUser() {
     console.log('trainerId:' + this.decodedToken.id);
     this.service.getUser(this.decodedToken.id).subscribe((res: apiResponse) => {
       this.userList = res.userData;
-
       console.log('trainser side user: ' + res);
     });
   }
@@ -76,40 +79,34 @@ check:number = 0
     console.log('trainerId:' + this.decodedToken.id);
     this.service.getUser(this.decodedToken.id).subscribe((res: apiResponse) => {
       this.userList = res.userData;
-
       console.log('trainser side user: ' + res);
     });
   }
- 
+
   selectUserHandler(userId: string): void {
-    this.getUser()
+    this.getUser();
     this.selectedUser = this.userList.find((user) => user._id === userId);
     console.log('selected trainer: ' + this.selectedUser._id);
-    this.readMessage(this.selectedUser._id,this.decodedToken.id)
+    this.readMessage(this.selectedUser._id, this.decodedToken.id);
     this.messageArray = [];
     this.chatService
       .getroomById(this.decodedToken.id, this.selectedUser._id)
       .subscribe((res: any) => {
         this.roomId = res.roomDetails._id;
-        this.readMessage(this.roomId,this.decodedToken.id)
-
+        this.readMessage(this.roomId, this.decodedToken.id);
         this.chatService.getStorage(this.roomId).subscribe((res: any) => {
           this.storageArray = res.chats;
+          console.log("storage: "+ this.storageArray)
         });
       });
-
 
     const storeIndex = this.storageArray.findIndex(
       (storage) => storage.roomId === this.roomId
     );
-
     if (storeIndex > -1) {
       this.messageArray = this.storageArray[storeIndex].chats;
     }
-
     this.join(this.currentUser.name, this.roomId);
-   
-
   }
 
   join(username: string, roomId: string): void {
@@ -120,18 +117,15 @@ check:number = 0
   }
 
   sendMessage(): void {
-    console.log("send check")
+    console.log('send check');
     this.chatService.sendMessage({
       senderId: this.selectedUser._id,
       receiverID: this.decodedToken.id,
       message: this.messageText,
     });
-    console.log("send check")
     this.chatService
-      .storemessage(this.decodedToken.id, this.messageText, this.roomId)
+      .storemessage(this.decodedToken.id, this.selectedUser._id, this.messageText, this.roomId)
       .subscribe((res: any) => {});
-      console.log("send check")
-
     this.chatService.getStorage(this.roomId).subscribe((res: any) => {
       this.storageArray = res.chats;
     });
@@ -139,7 +133,6 @@ check:number = 0
     const storeIndex = this.storageArray.findIndex(
       (storage) => storage.roomId === this.roomId
     );
-
     if (storeIndex > -1) {
       this.storageArray[storeIndex].chats.push({
         user: this.currentUser.name,
@@ -155,10 +148,8 @@ check:number = 0
           },
         ],
       };
-
       this.storageArray.push(updateStorage);
     }
-
     this.chatService.setStorage(this.storageArray);
     this.messageText = '';
   }
@@ -166,10 +157,7 @@ check:number = 0
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
     if (this.selectedFile) {
-      // File is selected, you can now upload it or handle it as per your requirement
       console.log('File selected:', this.selectedFile.name);
-      // You can trigger the upload process or any other action here
     }
   }
-  
 }
