@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 interface SidenavToggle{
   screenWidth: number
@@ -8,7 +8,9 @@ interface SidenavToggle{
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
-  styleUrls: ['./admin-dashboard.component.css']
+  styleUrls: ['./admin-dashboard.component.css'],
+  changeDetection:ChangeDetectionStrategy.OnPush
+
 })
 export class AdminDashboardComponent {
   isSideNavCollapsed = false
