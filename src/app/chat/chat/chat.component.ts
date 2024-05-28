@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { apiResponse, user, tokenData } from 'src/app/interfaces/user';
 import { UserService } from 'src/app/services/user.service';
@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class ChatComponent implements OnInit {
   decodedToken!: tokenData;
@@ -67,7 +68,6 @@ export class ChatComponent implements OnInit {
     );
   }
 
-  
   getUser() {
     console.log('trainerId:' + this.decodedToken.id);
     this.service.getUser(this.decodedToken.id).subscribe((res: apiResponse) => {
@@ -96,7 +96,7 @@ export class ChatComponent implements OnInit {
         this.readMessage(this.roomId, this.decodedToken.id);
         this.chatService.getStorage(this.roomId).subscribe((res: any) => {
           this.storageArray = res.chats;
-          console.log("storage: "+ this.storageArray)
+          console.log('storage: ' + this.storageArray);
         });
       });
 
@@ -124,7 +124,12 @@ export class ChatComponent implements OnInit {
       message: this.messageText,
     });
     this.chatService
-      .storemessage(this.decodedToken.id, this.selectedUser._id, this.messageText, this.roomId)
+      .storemessage(
+        this.decodedToken.id,
+        this.selectedUser._id,
+        this.messageText,
+        this.roomId
+      )
       .subscribe((res: any) => {});
     this.chatService.getStorage(this.roomId).subscribe((res: any) => {
       this.storageArray = res.chats;
@@ -157,17 +162,23 @@ export class ChatComponent implements OnInit {
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
     if (this.selectedFile) {
-      this.chatService.sendFile(this.decodedToken.id, this.selectedUser._id, this.messageText, this.roomId, this.selectedFile)
+      this.chatService
+        .sendFile(
+          this.decodedToken.id,
+          this.selectedUser._id,
+          this.messageText,
+          this.roomId,
+          this.selectedFile
+        )
         .subscribe(
           (res) => {
             console.log('File uploaded successfully:', res);
             event.target.value = null;
           },
           (error) => {
-           console.error('Error uploading file:', error);
+            console.error('Error uploading file:', error);
           }
         );
     }
   }
-  
 }
