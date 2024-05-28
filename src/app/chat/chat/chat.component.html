@@ -35,6 +35,7 @@
                 <div class="receiver-message">
                   <div class="message-container">
                     <p class="message-content">{{ item.content }}</p>
+                    <p *ngIf="item.filePath" class="file-path">{{ item.filePath }}</p>
                     <p class="message-time">{{ item.createdAt | date: 'hh:mm a' }}</p>
                   </div>
                 </div>

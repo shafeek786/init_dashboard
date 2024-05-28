@@ -68,5 +68,16 @@ storemessage(userId:string,receiverId:string,message:string,roomId:string){
 
     return this.http.get(this.url + '/readmessage', { params });
 }
+
+sendFile(userId: string, receiverId: string, message: string, roomId: string, file: File) {
+  const formData = new FormData();
+  formData.append('userId', userId);
+  formData.append('receiverId', receiverId);
+  formData.append('message', message);
+  formData.append('roomId', roomId);
+  formData.append('file', file); // Append the entire file object, not just file name
+
+  return this.http.post(this.url + '/filetochat', formData);
+}
 }
 

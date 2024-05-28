@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import { apiResponse, user, tokenData } from 'src/app/interfaces/user';
 import { UserService } from 'src/app/services/user.service';
 import { ChatService } from 'src/app/services/chat.service';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -157,7 +157,17 @@ export class ChatComponent implements OnInit {
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
     if (this.selectedFile) {
-      console.log('File selected:', this.selectedFile.name);
+      this.chatService.sendFile(this.decodedToken.id, this.selectedUser._id, this.messageText, this.roomId, this.selectedFile)
+        .subscribe(
+          (res) => {
+            console.log('File uploaded successfully:', res);
+            event.target.value = null;
+          },
+          (error) => {
+           console.error('Error uploading file:', error);
+          }
+        );
     }
   }
+  
 }
