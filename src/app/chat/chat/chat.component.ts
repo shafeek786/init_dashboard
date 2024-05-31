@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
-  changeDetection:ChangeDetectionStrategy.OnPush
+  
 })
 export class ChatComponent implements OnInit {
   decodedToken!: tokenData;
